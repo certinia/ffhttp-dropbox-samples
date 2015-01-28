@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <webLinks>
+        <fullName>Move_Attachments_to_Dropbox</fullName>
+        <availability>online</availability>
+        <description>Moves the selected attachments to Dropbox</description>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Move Attachments to Dropbox</masterLabel>
+        <openType>sidebar</openType>
+        <page>DropboxMoveAccountAttachments</page>
+        <protected>false</protected>
+    </webLinks>
+</CustomObject>

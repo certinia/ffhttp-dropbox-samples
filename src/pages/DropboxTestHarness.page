@@ -1,0 +1,464 @@
+<apex:page controller="DropboxTestHarnessController" id="page"
+	docType="html-5.0" tabStyle="Dropbox_Test_Harness__tab">
+
+	<script language="javascript">
+	
+	    <!-- Collapse PageBlockSection on Page Load-->
+	    
+	    function addLoadEvent(func) 
+	    {
+	    	var oldonload = window.onload;
+	      	if (typeof window.onload != 'function') 
+	      	{
+	        	window.onload = func;
+	      	} 
+	      	else 
+	      	{
+	        	window.onload = function() 
+	        	{
+	          		if (oldonload) 
+	          		{
+	            		oldonload();
+	          		}
+	          	
+	          		func();
+	        	}
+	      	}
+	    }
+	 
+	    function minimiseAll() 
+	    {
+	  		minimise(document.getElementById('page:mainForm:mainBlock:dropboxaccount'));
+	  		minimise(document.getElementById('page:mainForm:mainBlock:dropboxfiles'));
+	  		minimise(document.getElementById('page:mainForm:mainBlock:dropboxfileoperations'));
+	    }
+	    
+	    function minimise(element)
+	    {
+	    	if (element != null)
+	    	{
+	    		twistSection(element.childNodes[0].childNodes[0]);
+	    	}
+	    }
+	 
+	    addLoadEvent(minimiseAll);
+	</script>
+
+	<apex:form id="mainForm">
+		<apex:pageblock id="mainBlock" title="Dropbox API Test Harness">
+			<apex:pageBlockSection columns="1" collapsible="false">
+				<apex:outputText>
+					This page allows all the Dropbox API calls to be tested. 
+					It requires an authenticated Dropbox connector (with the connector type name 'Dropbox API') to function correctly.
+				</apex:outputText>
+			</apex:pageBlockSection>
+
+			<apex:pageBlockSection id="messages" title="Callout Details"
+				columns="1" collapsible="true">
+				<apex:pagemessages />
+			</apex:pageBlockSection>
+
+			<!-- Account API Calls -->
+			<apex:actionRegion id="dropboxaccountactionregion">
+				<apex:pageBlockSection id="dropboxaccount" title="Accounts"
+					columns="2" collapsible="true">
+
+					<apex:pageBlockSection id="dropboxaccountinfo" title="ACCOUNT_INFO"
+						columns="1" collapsible="false">
+						<apex:outputLink
+							value="https://www.dropbox.com/developers/core/docs#account-info">
+	                        https://www.dropbox.com/developers/core/docs#account-info
+	                    </apex:outputLink>
+						<apex:inputText label="Locale"
+							value="{!dropboxAccountInfoRequestLocale}" />
+						<apex:commandButton value="Submit"
+							action="{!dropboxAccountInfoRequest}" rerender="messages" />
+					</apex:pageBlockSection>
+				</apex:pageBlockSection>
+			</apex:actionRegion>
+
+			<!-- Files and metadata API Calls -->
+			<apex:actionRegion id="dropboxfilesactionregion">
+				<apex:pageBlockSection id="dropboxfiles" title="Files and metadata"
+					columns="2" collapsible="true">
+
+					<!-- Files (Get) Call -->
+					<apex:actionRegion id="dropboxfilesgetactionregion">
+						<apex:pageBlockSection id="dropboxfilesget" title="FILES (GET)"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#files-GET">
+		                        https://www.dropbox.com/developers/core/docs#files-GET
+		                    </apex:outputLink>
+							<apex:inputText label="Path"
+								value="{!dropboxFilesGetRequestPath}" />
+							<apex:inputText label="Rev" value="{!dropboxFilesGetRequestRev}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxFilesGetRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Files_Put Call -->
+					<apex:actionRegion id="dropboxfilesputactionregion">
+						<apex:pageBlockSection id="dropboxfilesput" title="FILES_PUT"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#files_put">
+		                        https://www.dropbox.com/developers/core/docs#files_put
+		                    </apex:outputLink>
+							<apex:inputFile value="{!dropboxFilesPutRequestFileBody}"
+								contentType="{!dropboxFilesPutRequestContentType}" />
+							<apex:inputText label="Path"
+								value="{!dropboxFilesPutRequestPath}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxFilesPutRequestLocale}" />
+							<apex:inputCheckBox label="Overwrite"
+								value="{!dropboxFilesPutRequestOverwrite}" />
+							<apex:inputText label="Parent_Rev"
+								value="{!dropboxFilesPutRequestParentRev}" />
+							<apex:inputCheckBox label="Autorename"
+								value="{!dropboxFilesPutRequestAutorename}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxFilesPutRequest}" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Metadata Call -->
+					<apex:actionRegion id="dropboxmetadataactionregion">
+						<apex:pageBlockSection id="dropboxmetadata" title="METADATA"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#metadata">
+		                        https://www.dropbox.com/developers/core/docs#metadata
+		                    </apex:outputLink>
+							<apex:inputText label="Path"
+								value="{!dropboxMetadataRequestPath}" />
+							<apex:input type="number" label="File Limit"
+								value="{!dropboxMetadataRequestFileLimit}" />
+							<apex:inputText label="Hash"
+								value="{!dropboxMetadataRequestHash}" />
+							<apex:inputCheckBox label="List"
+								value="{!dropboxMetadataRequestList}" />
+							<apex:inputCheckBox label="Include Deleted"
+								value="{!dropboxMetadataRequestIncludeDeleted}" />
+							<apex:inputText label="Rev" value="{!dropboxMetadataRequestRev}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxMetadataRequestLocale}" />
+							<apex:inputCheckBox label="Include Media Info"
+								value="{!dropboxMetadataRequestIncludeMediaInfo}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxMetadataRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Delta Call -->
+					<apex:actionRegion id="dropboxdeltaactionregion">
+						<apex:pageBlockSection id="dropboxdelta" title="DELTA" columns="1"
+							collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#delta">
+		                        https://www.dropbox.com/developers/core/docs#delta
+		                    </apex:outputLink>
+							<apex:inputText label="Cursor"
+								value="{!dropboxDeltaRequestCursor}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxDeltaRequestLocale}" />
+							<apex:inputText label="Path Prefix"
+								value="{!dropboxDeltaRequestPathPrefix}" />
+							<apex:inputCheckBox label="Include Media Info"
+								value="{!dropboxDeltaRequestIncludeMediaInfo}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxDeltaRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Delta Latest Cursor Call -->
+					<apex:actionRegion id="dropboxdeltalatestcursoractionregion">
+						<apex:pageBlockSection id="dropboxdeltalatestcursor"
+							title="DELTA/LATEST_CURSOR" columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#delta-latest-cursor">
+		                        https://www.dropbox.com/developers/core/docs#delta-latest-cursor
+		                    </apex:outputLink>
+							<apex:inputText label="Path Prefix"
+								value="{!dropboxDeltaLatestCursorRequestPathPrefix}" />
+							<apex:inputCheckBox label="Include Media Info"
+								value="{!dropboxDeltaLatestCursorRequestIncludeMediaInfo}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxDeltaLatestCursorRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Longpoll Delta Call -->
+					<apex:actionRegion id="dropboxlongpolldeltaactionregion">
+						<apex:pageBlockSection id="dropboxlongpolldelta"
+							title="LONGPOLL_DELTA" columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#longpoll-delta">
+		                        https://www.dropbox.com/developers/core/docs#longpoll-delta
+		                    </apex:outputLink>
+							<apex:inputText label="Cursor"
+								value="{!dropboxLongpollDeltaRequestCursor}" />
+							<apex:input type="number" label="Timeout"
+								value="{!dropboxLongpollDeltaRequestTimeout}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxLongpollDeltaRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Revisions Call -->
+					<apex:actionRegion id="dropboxrevisionsactionregion">
+						<apex:pageBlockSection id="dropboxrevisions" title="REVISIONS"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#revisions">
+		                        https://www.dropbox.com/developers/core/docs#revisions
+		                    </apex:outputLink>
+							<apex:inputText label="Path"
+								value="{!dropboxRevisionsRequestPath}" />
+							<apex:input type="number" label="Rev_Limit"
+								value="{!dropboxRevisionsRequestRevLimit}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxRevisionsRequestLocale}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxRevisionsRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Restore Call -->
+					<apex:actionRegion id="dropboxrestoresactionregion">
+						<apex:pageBlockSection id="dropboxrestore" title="RESTORE"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#restore">
+		                        https://www.dropbox.com/developers/core/docs#restore
+		                    </apex:outputLink>
+							<apex:inputText label="Path" value="{!dropboxRestoreRequestPath}" />
+							<apex:inputText label="Rev" value="{!dropboxRestoreRequestRev}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxRestoreRequestLocale}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxRevisionsRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Search Call -->
+					<apex:actionRegion id="dropboxsearchactionregion">
+						<apex:pageBlockSection id="dropboxsearch" title="SEARCH"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#search">
+		                        https://www.dropbox.com/developers/core/docs#search
+		                    </apex:outputLink>
+							<apex:inputText label="Path" value="{!dropboxSearchRequestPath}" />
+							<apex:inputText label="Query"
+								value="{!dropboxSearchRequestQuery}" />
+							<apex:input type="number" label="File Limit"
+								value="{!dropboxSearchRequestFileLimit}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxSearchRequestLocale}" />
+							<apex:inputCheckBox label="Include Deleted"
+								value="{!dropboxSearchRequestIncludeDeleted}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxSearchRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Shares Call -->
+					<apex:actionRegion id="dropboxsharesactionregion">
+						<apex:pageBlockSection id="dropboxshares" title="SHARES"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#shares">
+		                        https://www.dropbox.com/developers/core/docs#shares
+		                    </apex:outputLink>
+							<apex:inputText label="Path" value="{!dropboxSharesRequestPath}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxSharesRequestLocale}" />
+							<apex:inputCheckBox label="Short URL"
+								value="{!dropboxSharesRequestShortUrl}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxSharesRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Media Call -->
+					<apex:actionRegion id="dropboxmediaactionregion">
+						<apex:pageBlockSection id="dropboxmedia" title="MEDIA" columns="1"
+							collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#media">
+		                        https://www.dropbox.com/developers/core/docs#media
+		                    </apex:outputLink>
+							<apex:inputText label="Path" value="{!dropboxMediaRequestPath}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxMediaRequestLocale}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxMediaRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Copy Ref Call -->
+					<apex:actionRegion id="dropboxcopyrefactionregion">
+						<apex:pageBlockSection id="dropboxcopyref" title="COPYREF"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#copy_ref">
+		                        https://www.dropbox.com/developers/core/docs#copy_ref
+		                    </apex:outputLink>
+							<apex:inputText label="Path" value="{!dropboxCopyRefRequestPath}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxCopyRefRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Thumbnails Call -->
+					<apex:actionRegion id="dropboxthumbnailsactionregion">
+						<apex:pageBlockSection id="dropboxthumbnails" title="THUMBNAILS"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#thumbnails">
+		                        https://www.dropbox.com/developers/core/docs#thumbnails
+		                    </apex:outputLink>
+							<apex:inputText label="Path"
+								value="{!dropboxThumbnailsRequestPath}" />
+							<apex:inputText label="Format"
+								value="{!dropboxThumbnailsRequestFormat}" />
+							<apex:inputText label="Size"
+								value="{!dropboxThumbnailsRequestSize}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxThumbnailsRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Previews Call -->
+					<apex:actionRegion id="dropboxpreviewsactionregion">
+						<apex:pageBlockSection id="dropboxpreviews" title="PREVIEWS"
+							columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#previews">
+		                        https://www.dropbox.com/developers/core/docs#previews
+		                    </apex:outputLink>
+							<apex:inputText label="Path"
+								value="{!dropboxPreviewsRequestPath}" />
+							<apex:inputText label="Rev" value="{!dropboxPreviewsRequestRev}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxPreviewsRequest}" rerender="messages" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Chunked Upload Call -->
+					<apex:actionRegion id="dropboxchunkeduploadactionregion">
+						<apex:pageBlockSection id="dropboxchunkedupload"
+							title="CHUNKED_UPLOAD" columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#chunked-upload">
+		                        https://www.dropbox.com/developers/core/docs#chunked-upload
+		                    </apex:outputLink>
+							<apex:inputFile value="{!dropboxChunkedUploadRequestFileBody}"
+								contentType="{!dropboxChunkedUploadRequestContentType}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxChunkedUploadRequest}" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+
+					<!-- Commit Chunked Upload Call -->
+					<apex:actionRegion id="dropboxcommitchunkeduploadactionregion">
+						<apex:pageBlockSection id="dropboxcommitchunkedupload"
+							title="COMMIT_CHUNKED_UPLOAD" columns="1" collapsible="false">
+							<apex:outputLink
+								value="https://www.dropbox.com/developers/core/docs#commit-chunked-upload">
+		                        https://www.dropbox.com/developers/core/docs#commit-chunked-upload
+		                    </apex:outputLink>
+							<apex:inputText label="Upload_Id"
+								value="{!dropboxCommitChunkedUploadRequestUploadId}" />
+							<apex:inputText label="Path"
+								value="{!dropboxCommitChunkedUploadRequestPath}" />
+							<apex:inputText label="Locale"
+								value="{!dropboxCommitChunkedUploadRequestLocale}" />
+							<apex:inputCheckBox label="Overwrite"
+								value="{!dropboxCommitChunkedUploadRequestOverwrite}" />
+							<apex:inputText label="Parent_Rev"
+								value="{!dropboxCommitChunkedUploadRequestParentRev}" />
+							<apex:inputCheckBox label="Autorename"
+								value="{!dropboxCommitChunkedUploadRequestAutorename}" />
+							<apex:commandButton value="Submit"
+								action="{!dropboxCommitChunkedUploadRequest}" />
+						</apex:pageBlockSection>
+					</apex:actionRegion>
+				</apex:pageBlockSection>
+			</apex:actionRegion>
+
+			<!-- File Operations API Calls -->
+			<apex:actionRegion id="dropboxfileoperationsactionregion">
+				<apex:pageBlockSection id="dropboxfileoperations"
+					title="File operations" columns="2" collapsible="true">
+
+					<apex:pageBlockSection id="dropboxfileoperationscopy" title="COPY"
+						columns="1" collapsible="false">
+						<apex:outputLink
+							value="https://www.dropbox.com/developers/core/docs#fileops-copy">
+	                        https://www.dropbox.com/developers/core/docs#fileops-copy
+	                    </apex:outputLink>
+						<apex:inputText label="Root" value="{!dropboxCopyRequestRoot}" />
+						<apex:inputText label="From Path"
+							value="{!dropboxCopyRequestFromPath}" />
+						<apex:inputText label="To Path"
+							value="{!dropboxCopyRequestToPath}" />
+						<apex:inputText label="From Copy Ref"
+							value="{!dropboxCopyRequestFromCopyRef}" />
+						<apex:inputText label="Locale" value="{!dropboxCopyRequestLocale}" />
+						<apex:commandButton value="Submit" action="{!dropboxCopyRequest}"
+							rerender="messages" />
+					</apex:pageBlockSection>
+
+					<apex:pageBlockSection id="dropboxfileoperationscreatefolder"
+						title="CREATE FOLDER" columns="1" collapsible="false">
+						<apex:outputLink
+							value="https://www.dropbox.com/developers/core/docs#fileops-create-folder">
+	                        https://www.dropbox.com/developers/core/docs#fileops-create-folder
+	                    </apex:outputLink>
+						<apex:inputText label="Root"
+							value="{!dropboxCreateFolderRequestRoot}" />
+						<apex:inputText label="Path"
+							value="{!dropboxCreateFolderRequestPath}" />
+						<apex:inputText label="Locale"
+							value="{!dropboxCreateFolderRequestLocale}" />
+						<apex:commandButton value="Submit"
+							action="{!dropboxCreateFolderRequest}" rerender="messages" />
+					</apex:pageBlockSection>
+
+					<apex:pageBlockSection id="dropboxfileoperationsdelete"
+						title="DELETE" columns="1" collapsible="false">
+						<apex:outputLink
+							value="https://www.dropbox.com/developers/core/docs#fileops-delete">
+	                        https://www.dropbox.com/developers/core/docs#fileops-delete
+	                    </apex:outputLink>
+						<apex:inputText label="Root" value="{!dropboxDeleteRequestRoot}" />
+						<apex:inputText label="Path" value="{!dropboxDeleteRequestPath}" />
+						<apex:inputText label="Locale"
+							value="{!dropboxDeleteRequestLocale}" />
+						<apex:commandButton value="Submit"
+							action="{!dropboxDeleteRequest}" rerender="messages" />
+					</apex:pageBlockSection>
+
+					<apex:pageBlockSection id="dropboxfileoperationsmove" title="MOVE"
+						columns="1" collapsible="false">
+						<apex:outputLink
+							value="https://www.dropbox.com/developers/core/docs#fileops-move">
+	                        https://www.dropbox.com/developers/core/docs#fileops-move
+	                    </apex:outputLink>
+						<apex:inputText label="Root" value="{!dropboxMoveRequestRoot}" />
+						<apex:inputText label="From Path"
+							value="{!dropboxMoveRequestFromPath}" />
+						<apex:inputText label="To Path"
+							value="{!dropboxMoveRequestToPath}" />
+						<apex:inputText label="Locale" value="{!dropboxMoveRequestLocale}" />
+						<apex:commandButton value="Submit" action="{!dropboxMoveRequest}"
+							rerender="messages" />
+					</apex:pageBlockSection>
+				</apex:pageBlockSection>
+			</apex:actionRegion>
+		</apex:pageblock>
+	</apex:form>
+</apex:page>
